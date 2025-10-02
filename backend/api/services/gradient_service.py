@@ -17,8 +17,10 @@ class GradientAIService:
         self.base_url = os.getenv("GRADIENT_BASE_URL", "https://inference.do-ai.run")
         self.model = os.getenv("GRADIENT_MODEL", "openai-gpt-oss-120b")
         
+        # Para desarrollo, usar valores por defecto si no están configurados
         if not self.api_key:
-            raise ValueError("DO_GRADIENT_INFERENCE_KEY no está configurada")
+            self.api_key = "sk-do-tMbhJd4J9lY7wtTTVgpwL4uyQNIPcf34v5w5vqLrM2woXbH5Z1Z_SOQDld"
+            print("⚠️  Usando API key por defecto para desarrollo")
     
     async def generate_response(
         self, 
