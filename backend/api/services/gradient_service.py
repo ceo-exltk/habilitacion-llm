@@ -71,7 +71,7 @@ class GradientAIService:
                     "Content-Type": "application/json"
                 },
                 json=request_data,
-                timeout=30.0
+                timeout=120.0
             )
             
             if response.status_code != 200:
@@ -145,7 +145,7 @@ class GradientAIService:
                     json={
                         "model": self.model,
                         "messages": [{"role": "user", "content": "Test"}],
-                        "max_tokens": 10
+                        "max_tokens": 50
                     },
                     timeout=10.0
                 )

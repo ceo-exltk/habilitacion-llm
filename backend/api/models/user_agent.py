@@ -30,7 +30,7 @@ class UserAgentConfig(BaseModel):
     tone: ToneType = Field(default=ToneType.FORMAL, description="Tono de comunicación")
     temperature: float = Field(default=0.7, ge=0.0, le=1.0, description="Temperatura del modelo (0.0-1.0)")
     model: str = Field(default="openai-gpt-oss-120b", description="Modelo LLM a utilizar")
-    max_tokens: int = Field(default=1000, ge=1, le=4000, description="Máximo número de tokens")
+    max_tokens: int = Field(default=32000, ge=1, le=128000, description="Máximo número de tokens")
     custom_instructions: Optional[str] = Field(default=None, description="Instrucciones personalizadas")
     created_at: datetime = Field(default_factory=datetime.utcnow)
     updated_at: datetime = Field(default_factory=datetime.utcnow)
@@ -42,7 +42,7 @@ class UserAgentUpdate(BaseModel):
     tone: Optional[ToneType] = None
     temperature: Optional[float] = Field(None, ge=0.0, le=1.0)
     model: Optional[str] = None
-    max_tokens: Optional[int] = Field(None, ge=1, le=4000)
+    max_tokens: Optional[int] = Field(None, ge=1, le=128000)
     custom_instructions: Optional[str] = None
 
 
@@ -61,6 +61,36 @@ class SearchRequest(BaseModel):
     user_id: str = Field(..., description="ID del usuario")
     context: Optional[str] = Field(default=None, description="Contexto adicional")
     filters: Optional[Dict[str, Any]] = Field(default=None, description="Filtros de búsqueda")
+
+
+class BatchSentencesRequest(BaseModel):
+    """Solicitud de procesamiento por lotes de sentencias"""
+    sentences: list = Field(..., description="Lista de sentencias a procesar")
+    user_id: str = Field(..., description="ID del usuario")
+    analysis_type: str = Field(default="comparative", description="Tipo de análisis: comparative, summary, individual")
+    context: Optional[str] = Field(default=None, description="Contexto adicional para el análisis")
+    max_sentences_per_batch: int = Field(default=5, ge=1, le=20, description="Máximo de sentencias por lote")
+
+
+class SentenceDocument(BaseModel):
+    """Documento de sentencia individual"""
+    id: str = Field(..., description="ID único de la sentencia")
+    title: str = Field(..., description="Título de la sentencia")
+    content: str = Field(..., description="Contenido de la sentencia")
+    court: Optional[str] = Field(default=None, description="Tribunal que emitió la sentencia")
+    date: Optional[str] = Field(default=None, description="Fecha de la sentencia")
+    case_number: Optional[str] = Field(default=None, description="Número de caso")
+
+
+class BatchAnalysisResponse(BaseModel):
+    """Respuesta de análisis por lotes"""
+    batch_id: str = Field(..., description="ID del lote procesado")
+    total_sentences: int = Field(..., description="Total de sentencias procesadas")
+    analysis_type: str = Field(..., description="Tipo de análisis realizado")
+    results: list = Field(..., description="Resultados del análisis")
+    processing_time: float = Field(..., description="Tiempo total de procesamiento")
+    tokens_used: int = Field(..., description="Total de tokens utilizados")
+    user_config: UserAgentConfig = Field(..., description="Configuración utilizada")
 
 
 class SearchResponse(BaseModel):

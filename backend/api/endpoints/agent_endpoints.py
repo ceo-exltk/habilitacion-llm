@@ -157,7 +157,7 @@ async def get_available_models():
                 "id": "openai-gpt-oss-120b",
                 "name": "OpenAI GPT OSS 120B",
                 "description": "Modelo de 120B parámetros optimizado para tareas legales",
-                "max_tokens": 4000,
+                "max_tokens": 128000,
                 "supports_streaming": True
             }
         ],
@@ -219,4 +219,107 @@ async def get_tones():
                 "description": "Terminología legal precisa"
             }
         ]
+    }
+
+
+@router.get("/presets")
+async def get_presets():
+    """
+    Obtiene configuraciones predefinidas para diferentes casos de uso
+    """
+    return {
+        "presets": [
+            {
+                "id": "sentencias-judiciales",
+                "name": "Sentencias Judiciales",
+                "description": "Optimizado para procesar sentencias de 2-3 páginas",
+                "config": {
+                    "max_tokens": 32000,
+                    "temperature": 0.3,
+                    "specialization": "general",
+                    "tone": "formal"
+                }
+            },
+            {
+                "id": "contratos-cortos",
+                "name": "Contratos Cortos",
+                "description": "Para contratos de 1-2 páginas",
+                "config": {
+                    "max_tokens": 2500,
+                    "temperature": 0.2,
+                    "specialization": "civil",
+                    "tone": "tecnico"
+                }
+            },
+            {
+                "id": "consultas-generales",
+                "name": "Consultas Generales",
+                "description": "Para consultas legales básicas",
+                "config": {
+                    "max_tokens": 1500,
+                    "temperature": 0.7,
+                    "specialization": "general",
+                    "tone": "coloquial"
+                }
+            },
+            {
+                "id": "documentos-extensos",
+                "name": "Documentos Extensos",
+                "description": "Para documentos de 5+ páginas",
+                "config": {
+                    "max_tokens": 6000,
+                    "temperature": 0.4,
+                    "specialization": "general",
+                    "tone": "tecnico"
+                }
+            }
+        ]
+    }
+
+
+@router.post("/config/{user_id}/apply-preset")
+async def apply_preset(user_id: str, preset_id: str):
+    """
+    Aplica una configuración predefinida a un usuario
+    """
+    presets = {
+        "sentencias-judiciales": {
+            "max_tokens": 32000,
+            "temperature": 0.3,
+            "specialization": "general",
+            "tone": "formal"
+        },
+        "contratos-cortos": {
+            "max_tokens": 2500,
+            "temperature": 0.2,
+            "specialization": "civil",
+            "tone": "tecnico"
+        },
+        "consultas-generales": {
+            "max_tokens": 1500,
+            "temperature": 0.7,
+            "specialization": "general",
+            "tone": "coloquial"
+        },
+        "documentos-extensos": {
+            "max_tokens": 6000,
+            "temperature": 0.4,
+            "specialization": "general",
+            "tone": "tecnico"
+        }
+    }
+    
+    if preset_id not in presets:
+        raise HTTPException(status_code=400, detail="Preset no válido")
+    
+    preset_config = presets[preset_id]
+    update_data = UserAgentUpdate(**preset_config)
+    
+    config = user_service.update_user_config(user_id, update_data)
+    if not config:
+        raise HTTPException(status_code=404, detail="Usuario no encontrado")
+    
+    return {
+        "message": f"Preset '{preset_id}' aplicado exitosamente",
+        "config": config
     }

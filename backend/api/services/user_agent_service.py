@@ -103,7 +103,7 @@ class UserAgentService:
             tone=ToneType.FORMAL,
             temperature=0.7,
             model="openai-gpt-oss-120b",
-            max_tokens=1000
+            max_tokens=32000
         )
     
     def get_or_create_user_config(self, user_id: str) -> UserAgentConfig:
@@ -207,7 +207,7 @@ class UserAgentService:
                 tone=ToneType(config_data.get("tone", "formal")),
                 temperature=config_data.get("temperature", 0.7),
                 model=config_data.get("model", "openai-gpt-oss-120b"),
-                max_tokens=config_data.get("max_tokens", 1000),
+                max_tokens=config_data.get("max_tokens", 32000),
                 custom_instructions=config_data.get("custom_instructions")
             )
             

@@ -1,0 +1,41 @@
+# Archivos de desarrollo
+*.pyc
+__pycache__/
+.pytest_cache/
+.coverage
+.env
+.env.local
+.env.development
+.env.test
+.env.production
+
+# Archivos de IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Archivos de sistema
+.DS_Store
+Thumbs.db
+
+# Archivos de logs
+*.log
+logs/
+
+# Archivos temporales
+tmp/
+temp/
+
+# Archivos de documentación
+docs/
+*.md
+README.md
+
+# Scripts de desarrollo
+scripts/
+tests/
+
+# Archivos de configuración local
+config/local.py
+config/development.py
